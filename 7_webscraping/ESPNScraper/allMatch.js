@@ -1,37 +1,27 @@
-const cheerio = require("cheerio");
 const request = require("request");
-
-
-const scorecardObj = require('./scorecard')
-
-function getAllMatchLink(uri) {
-  request(uri, function (error, response, html) {
-    if (error) {
-      console.log(error);
-    } else {
-      extractAllLink(html);
+const cheerio = require("cheerio");
+const scoreCardObj = require("./scorecard");
+function getAllMatchesLink(url) {
+    request(url, function (err, response, html) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            extractAllLinks(html);
+        }
+    })
+}
+function extractAllLinks(html) {
+    let $ = cheerio.load(html);
+    let scorecardElems = $("a[data-hover='Scorecard']");
+    for (let i = 0; i < scorecardElems.length; i++) {
+        let link = $(scorecardElems[i]).attr("href");
+        let fullLink = "https://www.espncricinfo.com" + link;
+        console.log(fullLink);
+        scoreCardObj.ps(fullLink);
+        // 
     }
-  });
 }
-
-function extractAllLink(html) {
-  let $ = cheerio.load(html);
-
-  let scoreCardArr = $('a[data-hover="Scorecard"]');
-
-  for (let i = 0; i < scoreCardArr.length; i++) {
-    let link = $(scoreCardArr[i]).attr("href");
-    let fullLink = "https://www.espncricinfo.com/" + link;
-    //console.log(fullLink);
-
-    scorecardObj.ps(fullLink)
-
-
-
-  
-  }
-}
-
 module.exports = {
-  getAllMatch: getAllMatchLink,
-};
+    gAlmatches: getAllMatchesLink
+}
